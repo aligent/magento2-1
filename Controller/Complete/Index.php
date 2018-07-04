@@ -40,7 +40,7 @@ class Index extends AbstractStandard
       }
       $result = $this->getRequest()->getParam('result');
 
-      $this->_logger->debug(__("Result:- %s", $result));
+      $this->_logger->debug(__("Result:- %1", $result));
       // Is checkout id valid?
       if(!$this->getRequest()->getParam('checkoutId')){  
         throw new \Magento\Framework\Exception\LocalizedException(__('The checkoutId doesnot exist in the querystring.'));   

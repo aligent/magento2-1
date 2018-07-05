@@ -564,7 +564,12 @@ class Charge extends AbstractCheckout
     $this->_quote->collectTotals();
 
     $this->_logger->debug(__('Submitting quote %1', $this->_quote->getId()));
-    $order = $this->_quoteManagement->submit($this->_quote);
+    try {
+      $order = $this->_quoteManagement->submit($this->_quote);
+    } catch (\Exception $e) {
+      $order = null;
+      $this->_logger->critical($e);
+    }
 
     if ($isNewCustomer) {
       try {

@@ -557,12 +557,23 @@ class Charge extends AbstractCheckout
         break;
     }
 
+    $this->_logger->debug(__('Ignoring address validation'));
     $this->_ignoreAddressValidation();
+
+    $this->_logger->debug(__('Collecting totals'));
     $this->_quote->collectTotals();
-    $order = $this->_quoteManagement->submit($this->_quote);
+
+    $this->_logger->debug(__('Submitting quote %1', $this->_quote->getId()));
+    try {
+      $order = $this->_quoteManagement->submit($this->_quote);
+    } catch (\Exception $e) {
+      $order = null;
+      $this->_logger->critical($e);
+    }
 
     if ($isNewCustomer) {
       try {
+        $this->_logger->debug(__('Involving new customer'));
         $this->_involveNewCustomer();
       } catch (\Exception $e) {
         $this->_logger->critical($e);

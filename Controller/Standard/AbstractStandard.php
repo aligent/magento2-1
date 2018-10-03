@@ -411,7 +411,7 @@ abstract class AbstractStandard extends Action
     }
 
     $this->_logger->debug(
-        __("Current Customer Id:- %s Quote Customer Id:- %s Quote checkout method:- %s",
+        __("Current Customer Id:- %1 Quote Customer Id:- %2 Quote checkout method:- %3",
         $customerSession->getId(),$quoteCustomerId, $quote->getCheckoutMethod())
     );
 

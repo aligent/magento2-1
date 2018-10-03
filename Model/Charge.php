@@ -425,7 +425,14 @@ class Charge extends AbstractCheckout
 
     $this->_logger->info($this->_helper->__("Payment Captured"));
 
-    $this->_orderRepository->save($this->_order);           
+    try {
+      $this->_orderRepository->save($this->_order);
+    } catch (\Exception $e) {
+      $this->_logger->critical($e);
+      throw $e;
+    }
+
+    $this->_logger->info($this->_helper->__("Order #%s saved with status:- %s", $this->_order->getIncrementId(), $this->_order->getStatus()));
 
     // Invoice
     $invoice = $payment->getCreatedInvoice();

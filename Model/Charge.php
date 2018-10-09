@@ -417,6 +417,13 @@ class Charge extends AbstractCheckout
       $payment->setShouldCloseParentTransaction(true);
     }
 
+    $this->_logger->info($this->_helper->__(
+      "About to capture order #%s; current state:- %s, status:- %s",
+      $this->_order->getIncrementId(),
+      $this->_order->getState(),
+      $this->_order->getStatus()
+    ));
+
     // Capture
     $payment->setTransactionId($txnId)
             ->setPreparedMessage('')
@@ -424,6 +431,13 @@ class Charge extends AbstractCheckout
             ->registerCaptureNotification($amount);
 
     $this->_logger->info($this->_helper->__("Payment Captured"));
+
+    $this->_logger->info($this->_helper->__(
+      "About to save order #%s after capture; with state:- %s, status:- %s",
+      $this->_order->getIncrementId(),
+      $this->_order->getState(),
+      $this->_order->getStatus()
+    ));
 
     try {
       $this->_orderRepository->save($this->_order);

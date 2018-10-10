@@ -417,6 +417,10 @@ class Charge extends AbstractCheckout
       $payment->setShouldCloseParentTransaction(true);
     }
 
+    $this->_logger->debug($this->_helper->__("Payment class:- %s", get_class($payment)));
+    $this->_logger->debug($this->_helper->__("Auth and capture:- %s", ($isAuthAndCapture ? 'true': 'false')));
+    $this->_logger->debug($this->_helper->__("Parent transaction:- %s", ($parentTxnId ?: 'null')));
+
     $this->_logger->info($this->_helper->__(
       "About to capture order #%s; current state:- %s, status:- %s",
       $this->_order->getIncrementId(),

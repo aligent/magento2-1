@@ -209,6 +209,15 @@ abstract class AbstractStandard extends Action
       throw new \Magento\Framework\Exception\LocalizedException(__('Quote doesnot exist'));
     }
 
+    if ($quote->getHasError()) {
+        $errors = $quote->getErrors();
+        foreach ($errors as $error) {
+            if (strpos($error->getText(), 'out of stock') !== false) {
+                $this->getResponse()->setStatusHeader(403, '1.1', 'Forbidden');
+                throw new \Magento\Framework\Exception\LocalizedException(__($error->getText()));
+            }
+        }
+    }
     if (!$quote->hasItems() || $quote->getHasError()) {
       $this->getResponse()->setStatusHeader(403, '1.1', 'Forbidden');
       throw new \Magento\Framework\Exception\LocalizedException(__('Unable to initialize the Checkout.'));

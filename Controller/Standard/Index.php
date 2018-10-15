@@ -45,7 +45,11 @@ class Index extends AbstractStandard
     }
 
     if(empty($result['error'])){
-      $result['error'] = __('Can not get the redirect url from zipMoney.');
+      if (strpos($e->getMessage(), 'out of stock') !== false) {
+        $result['error'] = __($e->getMessage());
+      } else {
+        $result['error'] = __('Can not get the redirect url from zipMoney.');
+      }
     }
 
     return $this->_sendResponse($result, \Magento\Framework\Webapi\Exception::HTTP_INTERNAL_ERROR);

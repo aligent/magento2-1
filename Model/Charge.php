@@ -206,11 +206,11 @@ class Charge extends AbstractCheckout
 
 
     if($this->_getCustomerSession()->isLoggedIn()){
-      $this->_logger->debug($this->_helper->__('Load customer from session.'));
+      $this->_logger->debug($this->_helper->__("Load customer from session for quote {$quote->getId()}."));
       $customer = $this->_customerRepository->getById($this->_getCustomerSession()->getCustomerId());
-      $this->_logger->debug($this->_helper->__("Creating Order as Logged in Customer "));
+      $this->_logger->debug($this->_helper->__("Creating Order as Logged in Customer for quote {$quote->getId()}."));
     } else {
-      $this->_logger->debug($this->_helper->__('Load customer from db.'));      
+      $this->_logger->debug($this->_helper->__("Load customer from db for quote {$quote->getId()}."));
       $customer = $this->_customerRepository->getById($quote->getCustomerId());
       $this->_logger->debug($this->_helper->__("Creating Order on behalf of Customer %s",$quote->getCustomerId()));
     }  
@@ -339,7 +339,7 @@ class Charge extends AbstractCheckout
             ->setIsTransactionClosed(0)
             ->registerAuthorizationNotification($amount);
 
-    $this->_logger->info($this->_helper->__("Payment Authorised"));
+    $this->_logger->info($this->_helper->__("Payment Authorised for order {$this->_order->getIncrementId()}."));
 
     $this->_order->setStatus(self::STATUS_MAGENTO_AUTHORIZED);
               
@@ -434,7 +434,7 @@ class Charge extends AbstractCheckout
             ->setIsTransactionClosed(0)
             ->registerCaptureNotification($amount);
 
-    $this->_logger->info($this->_helper->__("Payment Captured"));
+    $this->_logger->info($this->_helper->__("Payment Captured for order {$this->_order->getIncrementId()}."));
 
     $this->_logger->info($this->_helper->__(
       "About to save order #%s after capture; with state:- %s, status:- %s",
@@ -517,13 +517,13 @@ class Charge extends AbstractCheckout
 
     $payload = $this->_payloadHelper->getChargePayload($this->_order);
 
-    $this->_logger->debug("Charge Payload:- ".$this->_helper->json_encode($payload));
+    $this->_logger->debug("Charge Payload for order {$this->_order->getIncrementId()}:- ".$this->_helper->json_encode($payload));
 
     try {
       $charge = $this->getApi()
                      ->chargesCreate($payload, $this->genIdempotencyKey());
 
-      $this->_logger->debug("Charge Response:- ".$this->_helper->json_encode($charge));
+      $this->_logger->debug("Charge Response for order {$this->_order->getIncrementId()}:- ".$this->_helper->json_encode($charge));
 
       if(isset($charge->error)){      
         throw new \Magento\Framework\Exception\LocalizedException(__('Could not create the charge'));
@@ -533,7 +533,7 @@ class Charge extends AbstractCheckout
         throw new \Magento\Framework\Exception\LocalizedException(__('Invalid Charge'));
       }
 
-      $this->_logger->debug($this->_helper->__("Charge State:- %s",$charge->getState()));
+      $this->_logger->debug($this->_helper->__("Charge State for order {$this->_order->getIncrementId()}:- %s",$charge->getState()));
 
       if($charge->getId()){
         $payment =  $this->_order->getPayment()
@@ -565,7 +565,7 @@ class Charge extends AbstractCheckout
     $checkoutMethod = $this->getCheckoutMethod();
 
     $this->_logger->debug(
-      $this->_helper->__('Quote Grand Total:- %s Quote Customer Id:- %s Checkout Method:- %s', $this->_quote->getGrandTotal(),$this->_quote->getCustomerId(),$checkoutMethod)
+      $this->_helper->__("Grand Total for quote {$this->_quote->getId()}:- %s Quote Customer Id:- %s Checkout Method:- %s", $this->_quote->getGrandTotal(),$this->_quote->getCustomerId(),$checkoutMethod)
     );
 
     $isNewCustomer = false;

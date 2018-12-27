@@ -107,13 +107,13 @@ class Checkout extends AbstractCheckout
 
     $request = $this->_payloadHelper->getCheckoutPayload($this->_quote);
 
-    $this->_logger->debug("Checkout Request:- ".$this->_payloadHelper->jsonEncode($request));
+    $this->_logger->debug("Checkout Request for quote {$this->_quote->getId()}:- ".$this->_payloadHelper->jsonEncode($request));
 
     try {
 
       $checkout = $this->getApi()->checkoutsCreate($request);
 
-      $this->_logger->debug("Checkout Response:- ".$this->_payloadHelper->jsonEncode($checkout));
+      $this->_logger->debug("Checkout Response for quote {$this->_quote->getId()}:- ".$this->_payloadHelper->jsonEncode($checkout));
 
       if(isset($checkout->error)){
         throw new \Magento\Framework\Exception\LocalizedException(__('Cannot get redirect URL from zipMoney.'));
@@ -126,9 +126,9 @@ class Checkout extends AbstractCheckout
 
       $this->_redirectUrl = $checkout->getUri();      
     } catch(\zipMoney\ApiException $e){
-      $this->_logger->debug("Errors:- ".json_encode($e->getResponseBody()));      
-      $this->_logger->debug("Errors:- ".json_encode($e->getCode()));      
-      $this->_logger->debug("Errors:- ".json_encode($e->getResponseObject()));      
+      $this->_logger->debug("Errors for quote {$this->_quote->getId()}:- ".json_encode($e->getResponseBody()));
+      $this->_logger->debug("Errors for quote {$this->_quote->getId()}:- ".json_encode($e->getCode()));
+      $this->_logger->debug("Errors for quote {$this->_quote->getId()}:- ".json_encode($e->getResponseObject()));
       throw new \Magento\Framework\Exception\LocalizedException(__('An error occurred while to requesting the redirect url.'));
     } 
 

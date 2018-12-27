@@ -608,11 +608,11 @@ class Charge extends AbstractCheckout
     $this->_order = $order;
 
     if (!$order) {
-      $this->_logger->info(__('Couldnot place the order'));
+      $this->_logger->info(__("Could not place the order for quote {$this->getQuote()->getId()}."));
       return false;
     }
 
-    $this->_logger->info(__('Successfull to place the order'));
+    $this->_logger->info(__("Order {$order->getIncrementId()} placed successfully."));
 
     /**
      * we only want to send to customer about new order when there is no redirect to third party

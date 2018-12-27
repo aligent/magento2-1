@@ -189,7 +189,7 @@ class Data extends AbstractHelper
         $this->_orderRepository->save($order);
       }
       
-      $this->_logger->debug("Cancelling the order");  
+      $this->_logger->debug(__("Cancelling order {$order->getIncrementId()}."));
 
       if($order->cancel()){
         $this->_orderRepository->save($order);

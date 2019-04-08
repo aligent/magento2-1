@@ -47,6 +47,10 @@ class Index extends AbstractStandard
     if(empty($result['error'])){
       if (strpos($e->getMessage(), 'out of stock') !== false) {
         $result['error'] = __($e->getMessage());
+
+        // N.B. front-end handling of the response needs to redirect to the cart to display these errors
+        $this->_messageManager->addErrorMessage("We're sorry, but one or more of the items in your cart are now out of stock");
+        $this->_messageManager->addErrorMessage("Please review the item(s) in your cart below");
       } else {
         $result['error'] = __('Can not get the redirect url from zipMoney.');
       }

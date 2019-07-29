@@ -30,7 +30,7 @@ class Index extends AbstractStandard
    */
   public function execute() 
   {
-    $this->_logger->debug(__("On Complete Controller"));
+    $this->_logger->debug(__("On Complete Controller for quote %1", $this->_getQuote()->getId()));
 
     try {
       // Is result valid ?
@@ -40,7 +40,7 @@ class Index extends AbstractStandard
       }
       $result = $this->getRequest()->getParam('result');
 
-      $this->_logger->debug(__("Result:- %1", $result));
+      $this->_logger->info(__("Result for quote %1:- %2", $this->_getQuote()->getId(), $result));
       // Is checkout id valid?
       if(!$this->getRequest()->getParam('checkoutId')){  
         throw new \Magento\Framework\Exception\LocalizedException(__('The checkoutId doesnot exist in the querystring.'));   

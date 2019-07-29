@@ -434,7 +434,7 @@ class Charge extends AbstractCheckout
             ->setIsTransactionClosed(0)
             ->registerCaptureNotification($amount);
 
-    $this->_logger->info($this->_helper->__("Payment Captured"));
+    $this->_logger->info($this->_helper->__("Payment Captured for order #%s", $this->_order->getIncrementId()));
 
     $this->_logger->info($this->_helper->__(
       "About to save order #%s after capture; with state:- %s, status:- %s",
@@ -565,7 +565,12 @@ class Charge extends AbstractCheckout
     $checkoutMethod = $this->getCheckoutMethod();
 
     $this->_logger->debug(
-      $this->_helper->__('Quote Grand Total:- %s Quote Customer Id:- %s Checkout Method:- %s', $this->_quote->getGrandTotal(),$this->_quote->getCustomerId(),$checkoutMethod)
+      $this->_helper->__('Quote Grand Total:- %s Quote Id:- %s Quote Customer Id:- %s Checkout Method:- %s',
+        $this->_quote->getGrandTotal(),
+        $this->_quote->getId(),
+        $this->_quote->getCustomerId(),
+        $checkoutMethod
+      )
     );
 
     $isNewCustomer = false;
@@ -582,16 +587,17 @@ class Charge extends AbstractCheckout
         break;
     }
 
-    $this->_logger->debug(__('Ignoring address validation'));
+    $this->_logger->debug(__('Ignoring address validation for quote %1', $this->_quote->getId()));
     $this->_ignoreAddressValidation();
 
-    $this->_logger->debug(__('Collecting totals'));
+    $this->_logger->debug(__('Collecting totals for quote %1', $this->_quote->getId()));
     $this->_quote->collectTotals();
 
     $this->_logger->debug(__('Submitting quote %1', $this->_quote->getId()));
     try {
       $order = $this->_quoteManagement->submit($this->_quote);
     } catch (\Exception $e) {
+      $this->_logger->info(__('Failed to submit quote %1', $this->_quote->getId()));
       $order = null;
       $this->_logger->critical($e);
     }
@@ -608,11 +614,16 @@ class Charge extends AbstractCheckout
     $this->_order = $order;
 
     if (!$order) {
-      $this->_logger->info(__('Couldnot place the order'));
+      if ($this->_quote->getReservedOrderId()) {
+        $this->_logger->info(__('Failed to place order #%1 for quote %2', $this->_quote->getReservedOrderId(), $this->_quote->getId()));
+      } else {
+        $this->_logger->info(__('Failed to place order for quote %1', $this->_quote->getId()));
+      }
+
       return false;
     }
 
-    $this->_logger->info(__('Successfull to place the order'));
+    $this->_logger->info(__('Successfully placed order #%1 for quote %2', $order->getIncrementId(), $this->_quote->getId()));
 
     /**
      * we only want to send to customer about new order when there is no redirect to third party

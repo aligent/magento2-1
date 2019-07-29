@@ -23,14 +23,14 @@ class Index extends AbstractStandard
   public function execute()
   {
     try {    
-      $this->_logger->info("Starting Checkout");
+      $this->_logger->info(__("Starting Checkout for quote %1", $this->_getQuote()->getId()));
       // Do the checkout
       $this->_initCheckout()->start();
 
       // Get the redirect url
       if($redirectUrl = $this->_checkout->getRedirectUrl()) {
       
-        $this->_logger->info(sprintf(__('Successful to get redirect url [ %s ] '), $redirectUrl));
+        $this->_logger->info(__('Successfully got redirect URL for quote %1: %2', $this->_getQuote()->getId(), $redirectUrl));
 
         $data = array(
             'redirect_uri'      => $redirectUrl,

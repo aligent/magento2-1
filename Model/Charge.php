@@ -468,7 +468,11 @@ class Charge extends AbstractCheckout
                    ->setIsCustomerNotified(true);
       
       $this->_orderRepository->save($this->_order);                    
+
+      $this->_logger->info($this->_helper->__("Order #%s saved after invoice with status:- %s", $this->_order->getIncrementId(), $this->_order->getStatus()));
     }
+
+    $this->_logger->debug($this->_helper->__("End of capture for order #%s", $this->_order->getIncrementId()));
   }
 
   /**
@@ -534,12 +538,19 @@ class Charge extends AbstractCheckout
       }
 
       $this->_logger->debug($this->_helper->__("Charge State:- %s",$charge->getState()));
+      $this->_logger->debug($this->_helper->__("Charge ID:- %s", $charge->getId()));
+      $this->_logger->debug($this->_helper->__("Receipt number:- %s", $charge->getReceiptNumber()));
 
       if($charge->getId()){
         $payment =  $this->_order->getPayment()
                      ->setZipmoneyChargeId($charge->getId())
                      ->setAdditionalInformation(array("receipt_number"=>$charge->getReceiptNumber()));;
-        $this->_orderPaymentRepository->save($payment);
+        try {
+          $this->_orderPaymentRepository->save($payment);
+          $this->_logger->debug('Saved receipt number with payment');
+        } catch (\Exception $e) {
+          $this->_logger->critical('Failed to save payment: ' . $e->getMessage());
+        }
       }
 
       $this->_chargeResponse($charge,false);
